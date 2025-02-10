@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIFF Viewer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/geotiff/dist/geotiff.min.js"></script>
+    <script src="https://unpkg.com/georaster"></script>
+    <script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #title {
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 24px;
+            margin: 0;
+        }
+        #map { 
+            height: calc(100vh - 50px); 
+        }
+    </style>
+</head>
+<body>
+    <div id="title">TIFF Viewer</div>
+    <div id="map"></div>
+    <script src="/static/main.js"></script>
+</body>
+</html>

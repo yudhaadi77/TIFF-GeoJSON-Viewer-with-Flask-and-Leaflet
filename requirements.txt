@@ -1,0 +1,7 @@
+Flask==2.0.1
+psycopg2-binary==2.9.1
+numpy==1.21.2
+gdal==3.3.2
+scipy==1.7.1
+geotiff==1.0.0
+georaster-layer-for-leaflet==1.1.0
