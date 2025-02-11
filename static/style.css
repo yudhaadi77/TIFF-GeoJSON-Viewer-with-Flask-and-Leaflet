@@ -7,5 +7,33 @@ body, html {
 
 #map {
     width: 100%;
-    height: 600px;
+    height: calc(100vh - 60px); /* Sesuaikan tinggi peta agar penuh */
+}
+
+/* Styling untuk kontrol layer */
+#controls {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9); /* Warna putih transparan */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+    z-index: 1000;
+}
+
+/* Styling untuk label dalam kontrol */
+#controls label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: black; /* Pastikan teks tetap terlihat */
+}
+
+/* Styling dropdown */
+#controls select {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }

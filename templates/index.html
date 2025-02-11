@@ -14,21 +14,84 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
-        #title {
-            background-color: #007BFF;
+
+        /* Header dengan Flexbox */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: blue;
             color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 24px;
-            margin: 0;
+            padding: 10px 20px;
         }
+
+        /* Styling untuk judul */
+        #title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Styling untuk dropdown controls */
+        #controls {
+            display: flex;
+            gap: 15px; /* Spasi antar dropdown */
+            align-items: center;
+        }
+
+        #controls label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: white;
+        }
+
+        #controls select {
+            margin-left: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid white;
+        }
+
+        /* Tombol Reset */
+        #resetButton {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Styling untuk peta */
         #map { 
+            width: 100%;
             height: calc(100vh - 50px); 
         }
     </style>
 </head>
 <body>
-    <div id="title">TIFF Viewer</div>
+    <div id="header">
+        <div id="controls">
+            <label>TIFF Layer:
+                <select id="selectTIFF" onchange="changeLayer('tiff')">
+                    <option value="">-- Select TIFF Layer --</option>
+                </select>
+            </label>
+            <label>Point Layer:
+                <select id="selectPoint" onchange="changeLayer('point')">
+                    <option value="">-- Select Point Layer --</option>
+                </select>
+            </label>
+            <label>Contour Layer:
+                <select id="selectContour" onchange="changeLayer('contour')">
+                    <option value="">-- Select Contour Layer --</option>
+                </select>
+            </label>
+            <button id="resetButton" onclick="resetLayers()">Reset</button>
+        </div>
+        <div id="title">Convert Database Viewer</div>
+    </div>
     <div id="map"></div>
     <script src="/static/main.js"></script>
 </body>

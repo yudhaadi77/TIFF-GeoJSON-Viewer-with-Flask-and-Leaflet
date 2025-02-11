@@ -6,94 +6,169 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Fungsi untuk memuat TIFF secara otomatis
-async function loadTIFFs() {
+// Layer untuk menyimpan data yang dipilih
+var tiffLayer, pointLayer, contourLayer;
+
+// Fungsi untuk mengambil daftar file dari server dan mengisi dropdown
+async function populateFileDropdowns() {
     try {
-        // Ambil daftar file TIFF dari server
         const response = await fetch('/data/files');
         const files = await response.json();
+
+        // Filter TIFF, Point, dan Contour files
         const tiffFiles = files.filter(file => file.endsWith('.tiff'));
-
-        for (const tiffFile of tiffFiles) {
-            const tiffResponse = await fetch(`/data/${tiffFile}`);
-            const arrayBuffer = await tiffResponse.arrayBuffer();
-            const georaster = await parseGeoraster(arrayBuffer);
-
-            // Tambahkan GeoRasterLayer ke Leaflet
-            const layer = new GeoRasterLayer({
-                georaster: georaster,
-                opacity: 0.7,
-                resolution: 256, // Sesuaikan resolusi tampilan
-            });
-            layer.addTo(map);
-
-            // Sesuaikan tampilan peta ke area TIFF
-            map.fitBounds(layer.getBounds());
-        }
-    } catch (error) {
-        console.error("Error loading TIFFs:", error);
-    }
-}
-
-// Fungsi untuk memuat GeoJSON point secara otomatis
-async function loadPoints() {
-    try {
-        // Ambil daftar file GeoJSON point dari server
-        const response = await fetch('/data/files');
-        const files = await response.json();
         const pointFiles = files.filter(file => file.endsWith('_point.geojson'));
-
-        for (const pointFile of pointFiles) {
-            const pointResponse = await fetch(`/data/${pointFile}`);
-            const geojson = await pointResponse.json();
-
-            // Tambahkan GeoJSON layer ke Leaflet
-            const pointLayer = L.geoJSON(geojson, {
-                pointToLayer: (feature, latlng) => {
-                    return L.marker(latlng);
-                },
-                onEachFeature: (feature, layer) => {
-                    layer.bindPopup(`Value: ${feature.properties.z}`);
-                }
-            }).addTo(map);
-
-            // Sesuaikan tampilan peta ke area point
-            map.fitBounds(pointLayer.getBounds());
-        }
-    } catch (error) {
-        console.error("Error loading points:", error);
-    }
-}
-
-// Fungsi untuk memuat GeoJSON contour secara otomatis
-async function loadContours() {
-    try {
-        // Ambil daftar file GeoJSON contour dari server
-        const response = await fetch('/data/files');
-        const files = await response.json();
         const contourFiles = files.filter(file => file.endsWith('_contour.geojson'));
 
-        for (const contourFile of contourFiles) {
-            const contourResponse = await fetch(`/data/${contourFile}`);
-            const geojson = await contourResponse.json();
+        // Isi dropdown TIFF
+        const selectTIFF = document.getElementById("selectTIFF");
+        tiffFiles.forEach(file => {
+            let option = new Option(file, file);
+            selectTIFF.add(option);
+        });
 
-            // Tambahkan GeoJSON layer ke Leaflet
-            const contourLayer = L.geoJSON(geojson, {
-                style: {
-                    color: 'red', // Warna garis kontur
-                    weight: 2,    // Ketebalan garis
-                }
-            }).addTo(map);
+        // Isi dropdown Point
+        const selectPoint = document.getElementById("selectPoint");
+        pointFiles.forEach(file => {
+            let option = new Option(file, file);
+            selectPoint.add(option);
+        });
 
-            // Sesuaikan tampilan peta ke area contour
-            map.fitBounds(contourLayer.getBounds());
-        }
+        // Isi dropdown Contour
+        const selectContour = document.getElementById("selectContour");
+        contourFiles.forEach(file => {
+            let option = new Option(file, file);
+            selectContour.add(option);
+        });
+
     } catch (error) {
-        console.error("Error loading contours:", error);
+        console.error("Error loading file list:", error);
     }
 }
 
-// Panggil fungsi untuk memuat semua file TIFF, point, dan kontur
-loadTIFFs();
-loadPoints();
-loadContours();
+// Fungsi untuk memuat TIFF yang dipilih
+async function loadSelectedTIFF() {
+    const selectedFile = document.getElementById("selectTIFF").value;
+    if (!selectedFile) {
+        if (tiffLayer) map.removeLayer(tiffLayer);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/data/${selectedFile}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const georaster = await parseGeoraster(arrayBuffer);
+
+        if (tiffLayer) {
+            map.removeLayer(tiffLayer);
+        }
+
+        tiffLayer = new GeoRasterLayer({
+            georaster: georaster,
+            opacity: 0.7,
+            resolution: 256
+        });
+
+        tiffLayer.addTo(map);
+        map.fitBounds(tiffLayer.getBounds());
+
+    } catch (error) {
+        console.error("Error loading TIFF:", error);
+    }
+}
+
+// Fungsi untuk memuat Point Layer yang dipilih
+async function loadSelectedPoint() {
+    const selectedFile = document.getElementById("selectPoint").value;
+    if (!selectedFile) {
+        if (pointLayer) map.removeLayer(pointLayer);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/data/${selectedFile}`);
+        const geojson = await response.json();
+
+        if (pointLayer) {
+            map.removeLayer(pointLayer);
+        }
+
+        pointLayer = L.geoJSON(geojson, {
+            pointToLayer: (feature, latlng) => {
+                return L.marker(latlng);
+            },
+            onEachFeature: (feature, layer) => {
+                layer.bindPopup(`Value: ${feature.properties.z}`);
+            }
+        });
+
+        pointLayer.addTo(map);
+        map.fitBounds(pointLayer.getBounds());
+
+    } catch (error) {
+        console.error("Error loading Point Layer:", error);
+    }
+}
+
+// Fungsi untuk memuat Contour Layer yang dipilih
+async function loadSelectedContour() {
+    const selectedFile = document.getElementById("selectContour").value;
+    if (!selectedFile) {
+        if (contourLayer) map.removeLayer(contourLayer);
+        return;
+    }
+
+    try {
+        const response = await fetch(`/data/${selectedFile}`);
+        const geojson = await response.json();
+
+        if (contourLayer) {
+            map.removeLayer(contourLayer);
+        }
+
+        contourLayer = L.geoJSON(geojson, {
+            style: {
+                color: 'red',
+                weight: 2
+            }
+        });
+
+        contourLayer.addTo(map);
+        map.fitBounds(contourLayer.getBounds());
+
+    } catch (error) {
+        console.error("Error loading Contour Layer:", error);
+    }
+}
+
+// Fungsi untuk menghapus semua layer (Reset)
+function resetLayers() {
+    if (tiffLayer) {
+        map.removeLayer(tiffLayer);
+        tiffLayer = null;
+    }
+    if (pointLayer) {
+        map.removeLayer(pointLayer);
+        pointLayer = null;
+    }
+    if (contourLayer) {
+        map.removeLayer(contourLayer);
+        contourLayer = null;
+    }
+
+    // Reset dropdown ke default
+    document.getElementById("selectTIFF").selectedIndex = 0;
+    document.getElementById("selectPoint").selectedIndex = 0;
+    document.getElementById("selectContour").selectedIndex = 0;
+}
+
+// Event listener untuk mendeteksi perubahan pada dropdown
+document.getElementById("selectTIFF").addEventListener("change", loadSelectedTIFF);
+document.getElementById("selectPoint").addEventListener("change", loadSelectedPoint);
+document.getElementById("selectContour").addEventListener("change", loadSelectedContour);
+
+// Event listener untuk tombol reset
+document.getElementById("resetButton").addEventListener("click", resetLayers);
+
+// Jalankan saat halaman dimuat
+populateFileDropdowns();

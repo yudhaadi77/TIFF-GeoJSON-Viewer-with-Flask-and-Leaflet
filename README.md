@@ -1,6 +1,6 @@
 # 🌍 TIFF & GeoJSON Viewer with Flask and Leaflet
 
-This is a **Flask-based web application** for visualizing **GeoTIFF** and **GeoJSON** data using **Leaflet.js**.  
+This is a simple **Flask-based web application** for visualizing **GeoTIFF** and **GeoJSON** data using **Leaflet.js**.  
 It **automatically** converts data from a PostgreSQL database into:
 - **TIFF (Raster)**
 - **GeoJSON (Point)**
@@ -190,5 +190,5 @@ pip install scipy
 ## 📧 Contact
 For any inquiries or contributions, feel free to reach out:
 - **Email:** yudhaadiputra26@gmail.com
-- **LinkedIn:** [your-profile](https://linkedin.com/in/yudha-adi-putra)
+- **LinkedIn:** [Yudha Adi Putra](https://linkedin.com/in/yudha-adi-putra)
 ```
